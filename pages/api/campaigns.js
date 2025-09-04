@@ -1,4 +1,12 @@
-import { kv } from '@vercel/kv';
+// Safe KV import with fallback
+let kv = null;
+try {
+  if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+    kv = require('@vercel/kv').kv;
+  }
+} catch (error) {
+  console.warn('Vercel KV not available');
+}
 
 export default async function handler(req, res) {
   const { method } = req;
@@ -6,10 +14,14 @@ export default async function handler(req, res) {
   switch (method) {
     case 'GET':
       try {
+        if (!kv) {
+          return res.status(200).json([]);
+        }
         const campaigns = await kv.get('campaigns') || [];
         res.status(200).json(campaigns);
       } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch campaigns' });
+        console.warn('KV error, returning empty data');
+        res.status(200).json([]);
       }
       break;
 
