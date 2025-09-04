@@ -18,20 +18,32 @@ export default function Home() {
   const fetchDrivers = async () => {
     try {
       const response = await fetch('/api/drivers');
-      const data = await response.json();
-      setDrivers(data);
+      if (response.ok) {
+        const data = await response.json();
+        setDrivers(data);
+      } else {
+        console.warn('API not available yet, using empty data');
+        setDrivers([]);
+      }
     } catch (error) {
-      console.error('Error fetching drivers:', error);
+      console.warn('Error fetching drivers:', error);
+      setDrivers([]);
     }
   };
 
   const fetchCampaigns = async () => {
     try {
       const response = await fetch('/api/campaigns');
-      const data = await response.json();
-      setCampaigns(data);
+      if (response.ok) {
+        const data = await response.json();
+        setCampaigns(data);
+      } else {
+        console.warn('API not available yet, using empty data');
+        setCampaigns([]);
+      }
     } catch (error) {
-      console.error('Error fetching campaigns:', error);
+      console.warn('Error fetching campaigns:', error);
+      setCampaigns([]);
     }
   };
 
