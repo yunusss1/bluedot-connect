@@ -22,7 +22,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          phoneNumber: '+905551234567', // Test numarası
+          phoneNumber: '+15005550006', // Twilio Magic Test Number
           message: 'Bu bir test mesajıdır! EV Filo Yönetim Sistemi çalışıyor! 🚗⚡'
         })
       });
