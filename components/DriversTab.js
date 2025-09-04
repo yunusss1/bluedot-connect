@@ -5,6 +5,12 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
   const fileInputRef = useRef(null);
+  const [showManualForm, setShowManualForm] = useState(false);
+  const [manualDriver, setManualDriver] = useState({
+    name: '',
+    phone: '',
+    email: ''
+  });
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -42,6 +48,53 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
     reader.readAsText(file);
   };
 
+  const handleManualAdd = async (e) => {
+    e.preventDefault();
+    
+    if (!manualDriver.name || !manualDriver.phone) {
+      setAlert({ type: 'error', message: 'İsim ve telefon alanları zorunludur!' });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const newDriver = {
+        id: `driver_${Date.now()}`,
+        name: manualDriver.name,
+        phone_number: manualDriver.phone,
+        email: manualDriver.email,
+        created_at: new Date().toISOString()
+      };
+
+      const updatedDrivers = [...drivers, newDriver];
+      
+      // API'ye gönder
+      const response = await fetch('/api/drivers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          csvData: `name,phone,email\n${newDriver.name},${newDriver.phone_number},${newDriver.email}`,
+          isManual: true 
+        })
+      });
+
+      if (response.ok) {
+        setDrivers(updatedDrivers);
+        setAlert({ type: 'success', message: 'Sürücü başarıyla eklendi!' });
+        setManualDriver({ name: '', phone: '', email: '' });
+        setShowManualForm(false);
+        onRefresh();
+      } else {
+        setAlert({ type: 'error', message: 'Sürücü eklenirken hata oluştu.' });
+      }
+    } catch (error) {
+      console.error('Manual add error:', error);
+      setAlert({ type: 'error', message: 'Bir hata oluştu.' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="bg-white/95 backdrop-blur-md rounded-xl p-6 shadow-xl">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">Sürücü Yönetimi</h2>
@@ -66,27 +119,9 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
           </svg>
           <h3 className="text-lg font-medium text-gray-900 mb-2">Sürücü listesi boş</h3>
-          <p className="text-gray-500 mb-6">CSV dosyası yükleyerek başlayın</p>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".csv"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            CSV Dosyası Yükle
-          </button>
-        </div>
-      )}
-      
-      {drivers.length > 0 && (
-        <div>
-          <div className="flex justify-between items-center mb-4">
-            <p className="text-gray-600">Toplam {drivers.length} sürücü</p>
+          <p className="text-gray-500 mb-6">CSV dosyası yükleyerek veya manuel olarak ekleyerek başlayın</p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <input
               ref={fileInputRef}
               type="file"
@@ -96,10 +131,48 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
             />
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm"
+              className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center"
             >
-              Yeni Liste Yükle
+              <span className="mr-2">📁</span>
+              CSV Dosyası Yükle
             </button>
+            <button
+              onClick={() => setShowManualForm(true)}
+              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
+            >
+              <span className="mr-2">👤</span>
+              Manuel Ekle
+            </button>
+          </div>
+        </div>
+      )}
+      
+      {drivers.length > 0 && (
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <p className="text-gray-600">Toplam {drivers.length} sürücü</p>
+            <div className="flex gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              <button
+                onClick={() => setShowManualForm(true)}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center"
+              >
+                <span className="mr-1">👤</span>
+                Manuel Ekle
+              </button>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm"
+              >
+                Yeni Liste Yükle
+              </button>
+            </div>
           </div>
           
           <div className="overflow-x-auto">
@@ -121,6 +194,96 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Manuel Ekleme Modal */}
+      {showManualForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 animate-fade-in">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-800">Yeni Sürücü Ekle</h3>
+              <button
+                onClick={() => {
+                  setShowManualForm(false);
+                  setManualDriver({ name: '', phone: '', email: '' });
+                }}
+                className="text-gray-500 hover:text-gray-700 text-xl"
+              >
+                ×
+              </button>
+            </div>
+            
+            <form onSubmit={handleManualAdd} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  İsim Soyisim <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={manualDriver.name}
+                  onChange={(e) => setManualDriver({...manualDriver, name: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                  placeholder="Örn: Ahmet Yılmaz"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Telefon <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  value={manualDriver.phone}
+                  onChange={(e) => setManualDriver({...manualDriver, phone: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                  placeholder="Örn: +905551234567"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  E-posta (Opsiyonel)
+                </label>
+                <input
+                  type="email"
+                  value={manualDriver.email}
+                  onChange={(e) => setManualDriver({...manualDriver, email: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                  placeholder="Örn: ahmet@example.com"
+                />
+              </div>
+              
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Ekleniyor...
+                    </div>
+                  ) : (
+                    'Sürücüyü Ekle'
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowManualForm(false);
+                    setManualDriver({ name: '', phone: '', email: '' });
+                  }}
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  İptal
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
