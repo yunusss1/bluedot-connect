@@ -1,7 +1,7 @@
 // Safe KV import with fallback
 let kv = null;
 try {
-  if ((process.env.KV_REST_API_URL || process.env.REDIS_URL) && process.env.KV_REST_API_TOKEN) {
+  if (process.env.REDIS_URL) {
     kv = require('@vercel/kv').kv;
   }
 } catch (error) {
