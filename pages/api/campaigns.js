@@ -1,12 +1,7 @@
-// Safe KV import with fallback
-let kv = null;
-try {
-  if (process.env.REDIS_URL) {
-    kv = require('@vercel/kv').kv;
-  }
-} catch (error) {
-  console.warn('Vercel KV not available');
-}
+// No database - session storage only
+let sessionData = {
+  campaigns: []
+};
 
 export default async function handler(req, res) {
   const { method } = req;
