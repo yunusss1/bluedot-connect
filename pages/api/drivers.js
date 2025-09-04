@@ -1,9 +1,5 @@
 import Papa from 'papaparse';
-
-// FUCK KV - In-memory storage only!
-let memoryData = {
-  drivers: []
-};
+import { getDrivers, setDrivers, addDrivers, addDriver } from '../../lib/memory-store.js';
 
 export default async function handler(req, res) {
   const { method } = req;
@@ -11,7 +7,7 @@ export default async function handler(req, res) {
   switch (method) {
     case 'GET':
       try {
-        res.status(200).json(memoryData.drivers);
+        res.status(200).json(getDrivers());
       } catch (error) {
         res.status(200).json([]);
       }
@@ -36,15 +32,15 @@ export default async function handler(req, res) {
           created_at: new Date().toISOString()
         }));
         
-        // Save to memory
-        memoryData.drivers = [...memoryData.drivers, ...drivers];
+        // Save to memory store
+        addDrivers(drivers);
         
-        res.status(201).json({ success: true, drivers: memoryData.drivers });
+        res.status(201).json({ success: true, drivers: getDrivers() });
       } catch (error) {
         console.warn('POST error:', error.message);
         res.status(201).json({ 
           success: true, 
-          drivers: memoryData.drivers,
+          drivers: getDrivers(),
           message: 'Added to memory storage' 
         });
       }
