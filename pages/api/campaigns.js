@@ -1,5 +1,5 @@
-// No database - session storage only
-let sessionData = {
+// FUCK KV - In-memory storage only!
+let memoryData = {
   campaigns: []
 };
 
@@ -9,13 +9,8 @@ export default async function handler(req, res) {
   switch (method) {
     case 'GET':
       try {
-        if (!kv) {
-          return res.status(200).json([]);
-        }
-        const campaigns = await kv.get('campaigns') || [];
-        res.status(200).json(campaigns);
+        res.status(200).json(memoryData.campaigns);
       } catch (error) {
-        console.warn('KV error, returning empty data');
         res.status(200).json([]);
       }
       break;
@@ -42,12 +37,8 @@ export default async function handler(req, res) {
           communication_logs: []
         };
         
-        // Get existing campaigns
-        const campaigns = await kv.get('campaigns') || [];
-        campaigns.push(campaign);
-        
-        // Save to KV
-        await kv.set('campaigns', campaigns);
+        // Save to memory
+        memoryData.campaigns.push(campaign);
         
         res.status(201).json({ success: true, campaign });
       } catch (error) {
@@ -59,19 +50,16 @@ export default async function handler(req, res) {
       try {
         const { id, status } = req.body;
         
-        const campaigns = await kv.get('campaigns') || [];
-        const campaignIndex = campaigns.findIndex(c => c.id === id);
+        const campaignIndex = memoryData.campaigns.findIndex(c => c.id === id);
         
         if (campaignIndex === -1) {
           return res.status(404).json({ error: 'Campaign not found' });
         }
         
-        campaigns[campaignIndex].status = status;
-        campaigns[campaignIndex].updated_at = new Date().toISOString();
+        memoryData.campaigns[campaignIndex].status = status;
+        memoryData.campaigns[campaignIndex].updated_at = new Date().toISOString();
         
-        await kv.set('campaigns', campaigns);
-        
-        res.status(200).json({ success: true, campaign: campaigns[campaignIndex] });
+        res.status(200).json({ success: true, campaign: memoryData.campaigns[campaignIndex] });
       } catch (error) {
         res.status(500).json({ error: 'Failed to update campaign' });
       }

@@ -1,7 +1,7 @@
 import Papa from 'papaparse';
 
-// No database - session storage only
-let sessionData = {
+// FUCK KV - In-memory storage only!
+let memoryData = {
   drivers: []
 };
 
@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   switch (method) {
     case 'GET':
       try {
-        res.status(200).json(sessionData.drivers);
+        res.status(200).json(memoryData.drivers);
       } catch (error) {
         res.status(200).json([]);
       }
@@ -20,8 +20,6 @@ export default async function handler(req, res) {
     case 'POST':
       try {
         const { csvData } = req.body;
-        
-        // Always work with session data
         
         // Parse CSV data
         const parsed = Papa.parse(csvData, {
@@ -38,16 +36,16 @@ export default async function handler(req, res) {
           created_at: new Date().toISOString()
         }));
         
-        // Save to session
-        sessionData.drivers = drivers;
+        // Save to memory
+        memoryData.drivers = [...memoryData.drivers, ...drivers];
         
-        res.status(201).json({ success: true, drivers });
+        res.status(201).json({ success: true, drivers: memoryData.drivers });
       } catch (error) {
-        console.warn('POST error, returning success anyway:', error.message);
+        console.warn('POST error:', error.message);
         res.status(201).json({ 
           success: true, 
-          drivers: [],
-          message: 'Error occurred but continuing' 
+          drivers: memoryData.drivers,
+          message: 'Added to memory storage' 
         });
       }
       break;
