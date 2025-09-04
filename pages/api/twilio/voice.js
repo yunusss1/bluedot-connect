@@ -1,70 +1,28 @@
-import twilio from 'twilio';
-import { kv } from '@vercel/kv';
+// TwiML endpoint for voice calls
+const twilio = require('twilio');
 
-const client = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
+export default function handler(req, res) {
+  const twiml = new twilio.twiml.VoiceResponse();
+  
+  // Start real-time transcription (from your doc)
+  const start = twiml.start();
+  start.transcription({
+    statusCallbackUrl: `${process.env.VERCEL_URL || 'https://bluedot-connect.vercel.app'}/api/twilio/transcriptions`,
+    languageCode: 'en-US',
+    track: 'both_tracks',
+    transcriptionEngine: 'google'
+  });
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  // Get message from query params (campaign template content)
+  const message = req.query.message || 'Hello! This is a test call from BlueDot Connect.';
+  
+  // Speak the message with en-US voice (from your doc)
+  twiml.say({ 
+    voice: 'Polly.Joanna-Generative', 
+    language: 'en-US' 
+  }, message);
 
-  try {
-    const { campaignId, driverId, phoneNumber, message } = req.body;
-    
-    // Create TwiML for the call
-    const twiml = `
-      <Response>
-        <Say language="tr-TR" voice="alice">
-          ${message}
-        </Say>
-        <Pause length="2"/>
-        <Say language="tr-TR" voice="alice">
-          Mesajınızı kaydetmek için bip sesinden sonra konuşun.
-        </Say>
-        <Record 
-          maxLength="30"
-          transcribe="true"
-          transcribeCallback="${process.env.VERCEL_URL}/api/twilio/transcription"
-          action="${process.env.VERCEL_URL}/api/twilio/recording-complete"
-        />
-      </Response>
-    `;
-    
-    // Make the call
-    const call = await client.calls.create({
-      twiml,
-      to: phoneNumber,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      statusCallback: `${process.env.VERCEL_URL}/api/twilio/status`,
-      statusCallbackEvent: ['initiated', 'ringing', 'answered', 'completed'],
-      statusCallbackMethod: 'POST'
-    });
-    
-    // Log the communication
-    const campaigns = await kv.get('campaigns') || [];
-    const campaign = campaigns.find(c => c.id === campaignId);
-    
-    if (campaign) {
-      const log = {
-        id: `log_${Date.now()}`,
-        campaign_id: campaignId,
-        driver_id: driverId,
-        type: 'voice',
-        status: 'initiated',
-        call_sid: call.sid,
-        created_at: new Date().toISOString()
-      };
-      
-      campaign.communication_logs.push(log);
-      await kv.set('campaigns', campaigns);
-    }
-    
-    res.status(200).json({ success: true, callSid: call.sid });
-  } catch (error) {
-    console.error('Twilio voice error:', error);
-    res.status(500).json({ error: 'Failed to make call' });
-  }
+  // Set response as XML
+  res.setHeader('Content-Type', 'text/xml');
+  res.status(200).send(twiml.toString());
 }
