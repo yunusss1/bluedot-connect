@@ -17,7 +17,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
   const startCampaign = async (campaignId) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/campaigns/start?id=${campaignId}`, {
+      const response = await fetch(`/api/campaigns/${campaignId}/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
