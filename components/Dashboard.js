@@ -14,6 +14,12 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
     totalDrivers: drivers.length
   };
 
+  // Arama sonuçları hesapla
+  const callResults = campaigns
+    .filter(c => c.results && c.results.length > 0)
+    .flatMap(c => c.results.map(r => ({ ...r, campaignId: c.id, campaignName: c.name })))
+    .slice(-10); // Son 10 arama sonucu
+
   // SMS Test Gönder
   const sendTestSMS = async () => {
     setSmsLoading(true);
@@ -368,6 +374,58 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
                 </div>
               );
             })}
+          </div>
+        )}
+      </div>
+
+      {/* Arama Sonuçları */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+          📞 Son Arama Sonuçları
+        </h2>
+
+        {callResults.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <p>Henüz arama sonucu bulunmuyor.</p>
+            <p className="text-sm mt-2">Kampanya başlattığınızda sonuçlar burada görünecek.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {callResults.map((result, index) => (
+              <div key={index} className="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3">
+                      <span className={`w-3 h-3 rounded-full ${
+                        result.success ? 'bg-green-500' : 'bg-red-500'
+                      }`}></span>
+                      <span className="font-medium text-gray-900">{result.driverName}</span>
+                      <span className="text-sm text-gray-500">{result.phone}</span>
+                    </div>
+                    <div className="mt-1 flex items-center space-x-4 text-sm text-gray-600">
+                      <span>📋 {result.campaignName}</span>
+                      {result.sid && (
+                        <span className="text-xs bg-gray-100 px-2 py-1 rounded font-mono">
+                          {result.sid.substring(0, 12)}...
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`text-sm font-medium ${
+                      result.success ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {result.simulated ? '🔧 Simulated' : result.success ? '✅ Success' : '❌ Failed'}
+                    </div>
+                    {result.message && (
+                      <div className="text-xs text-gray-500 mt-1 max-w-xs truncate">
+                        {result.message}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
