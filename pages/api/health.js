@@ -6,12 +6,6 @@ export default function handler(req, res) {
     services: {}
   };
 
-  // Check Vercel KV
-  health.services.vercel_kv = {
-    configured: !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN),
-    status: (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) ? 'ready' : 'missing_env'
-  };
-
   // Check Twilio
   health.services.twilio = {
     configured: !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_PHONE_NUMBER),
