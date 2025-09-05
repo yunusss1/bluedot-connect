@@ -1,5 +1,5 @@
-import { getCampaignById, getDrivers, updateCampaign } from '../../../lib/memory-store.js';
-import { sendSMS, makeVoiceCall } from '../../../lib/twilio-helpers.js';
+import { getCampaignById, getDrivers, updateCampaign } from '../../../../lib/memory-store';
+import { sendSMS, makeVoiceCall } from '../../../../lib/twilio-helpers';
 
 export default async function handler(req, res) {
   // Geri kalan kod aynı...
