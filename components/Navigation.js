@@ -1,7 +1,7 @@
 export default function Navigation({ activeTab, setActiveTab }) {
   const tabs = [
-    { id: 'drivers', label: 'Sürücüler', icon: '👥' },
-    { id: 'campaigns', label: 'Kampanyalar', icon: '📢' },
+    { id: 'drivers', label: 'Drivers', icon: '👥' },
+    { id: 'campaigns', label: 'Campaigns', icon: '📢' },
     { id: 'dashboard', label: 'Dashboard', icon: '📊' }
   ];
 

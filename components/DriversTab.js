@@ -32,10 +32,10 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
         if (response.ok) {
           const data = await response.json();
           setDrivers(data.drivers);
-          setAlert({ type: 'success', message: 'Sürücüler başarıyla yüklendi!' });
+          setAlert({ type: 'success', message: 'Drivers loaded successfully!' });
           onRefresh();
         } else {
-          setAlert({ type: 'error', message: 'Yükleme sırasında hata oluştu.' });
+          setAlert({ type: 'error', message: 'Error occurred during loading.' });
         }
       } catch (error) {
         console.error('Upload error:', error);
@@ -115,7 +115,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
 
   return (
     <div className="bg-white/95 backdrop-blur-md rounded-xl p-6 shadow-xl">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Sürücü Yönetimi</h2>
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">Driver Management</h2>
       
       {alert && (
         <div className={`p-4 rounded-lg mb-4 ${
@@ -136,8 +136,8 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
           <svg className="mx-auto h-24 w-24 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
           </svg>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Sürücü listesi boş</h3>
-          <p className="text-gray-500 mb-6">CSV dosyası yükleyerek veya manuel olarak ekleyerek başlayın</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Driver list is empty</h3>
+          <p className="text-gray-500 mb-6">Start by uploading a CSV file or adding manually</p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <input
@@ -152,7 +152,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
               className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center"
             >
               <span className="mr-2">📁</span>
-              CSV Dosyası Yükle
+              Upload CSV File
             </button>
             <button
               onClick={() => setShowManualForm(true)}
@@ -168,7 +168,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
       {drivers.length > 0 && (
         <div>
           <div className="flex justify-between items-center mb-4">
-            <p className="text-gray-600">Toplam {drivers.length} sürücü</p>
+            <p className="text-gray-600">Total {drivers.length} drivers</p>
             <div className="flex gap-2">
               <input
                 ref={fileInputRef}
@@ -188,7 +188,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
                 onClick={() => fileInputRef.current?.click()}
                 className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm"
               >
-                Yeni Liste Yükle
+                Upload New List
               </button>
             </div>
           </div>
@@ -197,9 +197,9 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
             <table className="min-w-full">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">İsim</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Telefon</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">E-posta</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Name</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Phone</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Email</th>
                 </tr>
               </thead>
               <tbody>

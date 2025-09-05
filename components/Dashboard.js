@@ -5,7 +5,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
   const [alert, setAlert] = useState(null);
   const [smsLoading, setSmsLoading] = useState(false);
 
-  // İstatistikler hesapla
+  // Calculate statistics
   const stats = {
     totalCampaigns: campaigns.length,
     activeCampaigns: campaigns.filter(c => c.status === 'ongoing').length,
@@ -59,7 +59,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
     }
   };
 
-  // Kampanya başlat
+  // Start campaign
   const startCampaign = async (campaignId) => {
     setLoading(true);
     try {
@@ -71,14 +71,14 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
       if (response.ok) {
         setAlert({ 
           type: 'success', 
-          message: 'Kampanya başarıyla başlatıldı!' 
+          message: 'Campaign started successfully!' 
         });
         onRefresh();
       } else {
         const errorData = await response.json();
         setAlert({ 
           type: 'error', 
-          message: errorData.error || 'Kampanya başlatılırken hata oluştu.' 
+          message: errorData.error || 'Error occurred while starting campaign.' 
         });
       }
     } catch (error) {
@@ -93,7 +93,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
     }
   };
 
-  // Kampanya durdu
+  // Stop campaign
   const updateCampaignStatus = async (campaignId, status) => {
     try {
       const response = await fetch('/api/campaigns', {
@@ -105,13 +105,13 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
       if (response.ok) {
         setAlert({ 
           type: 'success', 
-          message: 'Kampanya durumu güncellendi!' 
+          message: 'Campaign status updated!' 
         });
         onRefresh();
       } else {
         setAlert({ 
           type: 'error', 
-          message: 'Durum güncellenirken hata oluştu.' 
+          message: 'Error occurred while updating status.' 
         });
       }
     } catch (error) {
@@ -125,13 +125,13 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
     }
   };
 
-  // Durum badge'i
+  // Status badge
   const getStatusBadge = (status) => {
     const statusConfig = {
       scheduled: { color: 'bg-yellow-100 text-yellow-800', text: 'Planlandı', icon: '⏰' },
-      ongoing: { color: 'bg-blue-100 text-blue-800', text: 'Devam Ediyor', icon: '🔄' },
-      completed: { color: 'bg-green-100 text-green-800', text: 'Tamamlandı', icon: '✅' },
-      failed: { color: 'bg-red-100 text-red-800', text: 'Başarısız', icon: '❌' }
+      ongoing: { color: 'bg-blue-100 text-blue-800', text: 'Ongoing', icon: '🔄' },
+      completed: { color: 'bg-green-100 text-green-800', text: 'Completed', icon: '✅' },
+      failed: { color: 'bg-red-100 text-red-800', text: 'Failed', icon: '❌' }
     };
     
     const config = statusConfig[status] || statusConfig.scheduled;
@@ -144,7 +144,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
     );
   };
 
-  // İstatistik kartı
+  // Statistics card
   const StatCard = ({ title, value, icon, color }) => (
     <div className="bg-white/95 backdrop-blur-md rounded-lg p-6 shadow-lg">
       <div className="flex items-center justify-between">
@@ -181,22 +181,22 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
         </div>
       )}
 
-      {/* İstatistikler */}
+      {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <StatCard 
-          title="Toplam Kampanya" 
+          title="Total Campaigns" 
           value={stats.totalCampaigns} 
           icon="📢" 
           color="text-purple-600"
         />
         <StatCard 
-          title="Aktif Kampanya" 
+          title="Active Campaigns" 
           value={stats.activeCampaigns} 
           icon="🔄" 
           color="text-blue-600"
         />
         <StatCard 
-          title="Tamamlanan" 
+          title="Completed" 
           value={stats.completedCampaigns} 
           icon="✅" 
           color="text-green-600"
@@ -208,7 +208,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
           color="text-yellow-600"
         />
         <StatCard 
-          title="Toplam Sürücü" 
+          title="Total Drivers" 
           value={stats.totalDrivers} 
           icon="👥" 
           color="text-gray-600"
@@ -244,10 +244,10 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
         </div>
       </div>
 
-      {/* Kampanya Listesi */}
+      {/* Campaign List */}
       <div className="bg-white/95 backdrop-blur-md rounded-xl p-6 shadow-xl">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">📊 Kampanya Yönetimi</h2>
+          <h2 className="text-2xl font-bold text-gray-800">📊 Campaign Management</h2>
           <button
             onClick={onRefresh}
             className="text-purple-600 hover:text-purple-700 font-medium"
@@ -260,10 +260,10 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
           <div className="text-center py-12">
             <div className="text-gray-400 text-6xl mb-4">📢</div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Henüz kampanya oluşturulmamış
+              No campaigns created yet
             </h3>
             <p className="text-gray-500">
-              Kampanyalar sekmesinden yeni kampanya oluşturabilirsiniz.
+              You can create a new campaign from the Campaigns tab.
             </p>
           </div>
         ) : (
@@ -284,7 +284,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
                   className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow"
                 >
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                    {/* Kampanya Bilgileri */}
+                    {/* Campaign Information */}
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="font-semibold text-gray-800">{campaign.name}</h3>
@@ -331,12 +331,12 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
                           {loading ? (
                             <>
                               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                              Başlatılıyor...
+                              Starting...
                             </>
                           ) : (
                             <>
                               <span className="mr-1">▶️</span>
-                              Başlat
+                              Start
                             </>
                           )}
                         </button>
@@ -348,22 +348,22 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
                           className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center"
                         >
                           <span className="mr-1">⏹️</span>
-                          Durdur
+                          Stop
                         </button>
                       )}
 
                       {campaign.status === 'completed' && (
                         <div className="px-4 py-2 text-green-600 font-medium">
-                          ✅ Tamamlandı
+                          ✅ Completed
                         </div>
                       )}
                     </div>
                   </div>
 
-                  {/* Mesaj Önizleme */}
+                  {/* Message Preview */}
                   {campaign.template_content && (
                     <div className="mt-3 p-3 bg-white rounded border border-gray-100">
-                      <p className="text-xs font-medium text-gray-500 mb-1">MESAJ ÖNİZLEME:</p>
+                      <p className="text-xs font-medium text-gray-500 mb-1">MESSAGE PREVIEW:</p>
                       <p className="text-sm text-gray-700 italic">
                         "{campaign.template_content.length > 100 
                           ? campaign.template_content.substring(0, 100) + '...' 
@@ -378,16 +378,16 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
         )}
       </div>
 
-      {/* Arama Sonuçları */}
+      {/* Call Results */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
-          📞 Son Arama Sonuçları
+          📞 Recent Call Results
         </h2>
 
         {callResults.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            <p>Henüz arama sonucu bulunmuyor.</p>
-            <p className="text-sm mt-2">Kampanya başlattığınızda sonuçlar burada görünecek.</p>
+            <p>No call results found yet.</p>
+            <p className="text-sm mt-2">Results will appear here when you start a campaign.</p>
           </div>
         ) : (
           <div className="space-y-3">

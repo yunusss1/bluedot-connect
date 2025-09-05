@@ -20,12 +20,12 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
         content: 'Merhaba, bu EV filo yönetiminden bir hatırlatmadır. Aracınızın periyodik bakım zamanı yaklaşmaktadır. Lütfen en kısa sürede yetkili servisle iletişime geçiniz. Teşekkür ederiz.'
       },
       {
-        title: 'Şarj Durumu Kontrolü',
-        content: 'Merhaba, aracınızın şarj durumu hakkında bilgi almak istiyoruz. Mevcut şarj seviyenizi ve bir sonraki şarj planınızı bip sesinden sonra belirtir misiniz?'
+        title: 'Battery Status Check',
+        content: 'Hello, we would like to get information about your vehicle\'s battery status. Can you please specify your current charge level and your next charging plan after the beep?'
       },
       {
-        title: 'Acil Durum Bildirimi',
-        content: 'Önemli duyuru: Yarın saat 10:00 ile 14:00 arasında şarj istasyonlarında bakım çalışması yapılacaktır. Aracınızı bugün şarj etmenizi öneririz.'
+        title: 'Emergency Notification',
+        content: 'Important announcement: Maintenance work will be carried out at charging stations tomorrow between 10:00 and 14:00. We recommend charging your vehicle today.'
       }
     ],
     sms: [
@@ -69,7 +69,7 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
         const data = await response.json();
         setAlert({ 
           type: 'success', 
-          message: 'Kampanya başarıyla oluşturuldu! Dashboard\'dan başlatabilirsiniz.' 
+          message: 'Campaign created successfully! You can start it from the Dashboard.' 
         });
         
         // Formu sıfırla
@@ -80,7 +80,7 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
           target_driver_ids: []
         });
         
-        // Kampanya listesini güncelle
+        // Update campaign list
         onRefresh();
         
         // 5 saniye sonra alert'i kaldır
@@ -89,7 +89,7 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
         const errorData = await response.json();
         setAlert({ 
           type: 'error', 
-          message: errorData.error || 'Kampanya oluşturulurken bir hata oluştu.' 
+          message: errorData.error || 'An error occurred while creating the campaign.' 
         });
         setTimeout(() => setAlert(null), 5000);
       }
@@ -142,7 +142,7 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
   return (
     <div className="bg-white/95 backdrop-blur-md rounded-xl p-6 shadow-xl">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Yeni Kampanya Oluştur</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Create New Campaign</h2>
         <button
           onClick={() => setShowTemplates(!showTemplates)}
           className="text-purple-600 hover:text-purple-700 text-sm font-medium flex items-center"
@@ -151,7 +151,7 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
         </button>
       </div>
       
-      {/* Alert Mesajları */}
+      {/* Alert Messages */}
       {alert && (
         <div className={`p-4 rounded-lg mb-4 flex items-center justify-between animate-fade-in ${
           alert.type === 'success' 
@@ -173,11 +173,11 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
         </div>
       )}
       
-      {/* Şablon Seçici Modal */}
+      {/* Template Selector Modal */}
       {showTemplates && (
         <div className="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
           <h3 className="font-medium text-purple-900 mb-3">
-            {formData.type === 'voice' ? 'Sesli Arama' : 'SMS'} Şablonları
+            {formData.type === 'voice' ? 'Voice Call' : 'SMS'} Templates
           </h3>
           <div className="grid gap-2">
             {messageTemplates[formData.type].map((template, index) => (
@@ -202,18 +202,18 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
           <div className="text-yellow-600 text-4xl mb-3">⚠️</div>
           <h3 className="text-yellow-800 font-medium mb-2">
-            Sürücü Listesi Bulunamadı
+            Driver List Not Found
           </h3>
           <p className="text-yellow-700 text-sm">
-            Kampanya oluşturmak için önce Sürücüler sekmesinden CSV dosyası yüklemeniz gerekiyor.
+            To create a campaign, you first need to upload a CSV file from the Drivers tab.
           </p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Kampanya Adı */}
+          {/* Campaign Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Kampanya Adı <span className="text-red-500">*</span>
+              Campaign Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -243,7 +243,7 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
                   className="mr-2 text-purple-600"
                 />
                 <span className="flex items-center">
-                  <span className="mr-2">🎤</span> Sesli Arama
+                  <span className="mr-2">🎤</span> Voice Call
                 </span>
               </label>
               <label className="flex items-center cursor-pointer bg-gray-50 px-4 py-2 rounded-lg border-2 transition-all hover:bg-purple-50 ${formData.type === 'sms' ? 'border-purple-600 bg-purple-50' : 'border-gray-200'}">
@@ -261,10 +261,10 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
             </div>
           </div>
           
-          {/* Mesaj İçeriği */}
+          {/* Message Content */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Mesaj İçeriği <span className="text-red-500">*</span>
+              Message Content <span className="text-red-500">*</span>
             </label>
             <textarea
               value={formData.template_content}
@@ -290,11 +290,11 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
             </div>
           </div>
           
-          {/* Hedef Sürücüler */}
+          {/* Target Drivers */}
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="block text-sm font-medium text-gray-700">
-                Hedef Sürücüler <span className="text-red-500">*</span>
+                Target Drivers <span className="text-red-500">*</span>
                 <span className="ml-2 text-purple-600">
                   ({formData.target_driver_ids.length}/{drivers.length} seçili)
                 </span>
@@ -305,7 +305,7 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
                   onClick={selectAllDrivers}
                   className="text-purple-600 hover:text-purple-700 text-sm font-medium"
                 >
-                  Tümünü Seç
+                  Select All
                 </button>
                 <button
                   type="button"
@@ -344,12 +344,12 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
                 ))
               ) : (
                 <p className="text-gray-500 text-center py-4">
-                  Henüz sürücü eklenmemiş
+                  No drivers added yet
                 </p>
               )}
             </div>
             <p className="text-xs text-gray-500 mt-2">
-              Kampanya sadece seçili sürücülere gönderilecektir.
+              The campaign will be sent only to selected drivers.
             </p>
           </div>
           
@@ -363,12 +363,12 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Oluşturuluyor...
+                  Creating...
                 </>
               ) : (
                 <>
                   <span className="mr-2">🚀</span>
-                  Kampanyayı Oluştur
+                  Create Campaign
                 </>
               )}
             </button>
@@ -390,15 +390,15 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
         </form>
       )}
       
-      {/* Kampanya Özeti */}
+      {/* Campaign Summary */}
       {formData.name && formData.template_content && formData.target_driver_ids.length > 0 && (
         <div className="mt-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
-          <h3 className="font-medium text-purple-900 mb-2">📋 Kampanya Özeti</h3>
+          <h3 className="font-medium text-purple-900 mb-2">📋 Campaign Summary</h3>
           <div className="space-y-1 text-sm text-purple-700">
-            <p><strong>Ad:</strong> {formData.name}</p>
-            <p><strong>Kanal:</strong> {formData.type === 'voice' ? 'Sesli Arama' : 'SMS'}</p>
-            <p><strong>Hedef Kitle:</strong> {formData.target_driver_ids.length} sürücü</p>
-            <p><strong>Mesaj Uzunluğu:</strong> {characterCount} karakter</p>
+            <p><strong>Name:</strong> {formData.name}</p>
+            <p><strong>Channel:</strong> {formData.type === 'voice' ? 'Voice Call' : 'SMS'}</p>
+            <p><strong>Target Audience:</strong> {formData.target_driver_ids.length} drivers</p>
+            <p><strong>Message Length:</strong> {characterCount} characters</p>
           </div>
         </div>
       )}
