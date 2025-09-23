@@ -66,10 +66,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
         created_at: new Date().toISOString()
       };
 
-      // Önce local state'i güncelle
-      const updatedDrivers = [...drivers, newDriver];
-      setDrivers(updatedDrivers);
-      
+
       // API'ye gönder (başarısız olsa da local'de kalacak)
       try {
         const response = await fetch('/api/drivers', {
@@ -83,6 +80,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
 
         if (response.ok) {
           const data = await response.json();
+          setDrivers(data.drivers); // ← Bu satırı ekle
           setAlert({ 
             type: 'success', 
             message: data.message ? 
