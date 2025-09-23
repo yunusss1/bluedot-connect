@@ -1,5 +1,5 @@
-const { getCampaignById, getDrivers, updateCampaign } = require('../../../lib/memory-store.js');
-const { sendSMS, makeVoiceCall } = require('../../../lib/twilio-helpers.js');
+import { getCampaignById, getDrivers, updateCampaign } from '../../../lib/memory-store.js';
+import { sendSMS, makeVoiceCall } from '../../../lib/twilio-helpers.js';
 
 export default async function handler(req, res) {
   console.log('🚀 Campaign Start API Called:', req.method, req.query.id);
