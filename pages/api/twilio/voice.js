@@ -1,5 +1,5 @@
 // pages/api/twilio/voice.js - 2024 güncel Real-Time Transcription API
-const twilio = require('twilio');
+import twilio from 'twilio';
 
 export default function handler(req, res) {
   console.log('=== VOICE ENDPOINT CALLED ===');
