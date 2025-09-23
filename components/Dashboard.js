@@ -391,51 +391,24 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
           </div>
         ) : (
           <div className="space-y-3">
-   {callResults.map((result, index) => (
-  <div key={index} className="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-    <div className="flex items-center justify-between">
-      <div className="flex-1">
-        <div className="flex items-center space-x-3">
-          <span className={`w-3 h-3 rounded-full ${
-            result.success ? 'bg-green-500' : 'bg-red-500'
-          }`}></span>
-          <span className="font-medium text-gray-900">{result.driverName}</span>
-          <span className="text-sm text-gray-500">{result.phone}</span>
-        </div>
-        <div className="mt-1 flex items-center space-x-4 text-sm text-gray-600">
-          <span>📋 {result.campaignName}</span>
-          {result.sid && (
-            <span className="text-xs bg-gray-100 px-2 py-1 rounded font-mono">
-              {result.sid.substring(0, 12)}...
-            </span>
-          )}
-          {/* Recording info eklendi */}
-          {result.recordingUrl && (
-            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-              🎤 {result.recordingDuration}s
-            </span>
-          )}
-        </div>
-      </div>
-      <div className="text-right flex items-center space-x-2">
-        <div className={`text-sm font-medium ${
-          result.success ? 'text-green-600' : 'text-red-600'
-        }`}>
-          {result.simulated ? '🔧 Simulated' : result.success ? '✅ Success' : '❌ Failed'}
-        </div>
-        {/* Recording play button eklendi */}
-        {result.recordingUrl && (
-          <button
-            onClick={() => window.open(result.recordingUrl, '_blank')}
-            className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition-colors"
-          >
-            🎵 Play
-          </button>
-        )}
-      </div>
-    </div>
-  </div>
-))}
+    {callResults.map((result, index) => (
+              <div key={index} className="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3">
+                      <span className={`w-3 h-3 rounded-full ${
+                        result.success ? 'bg-green-500' : 'bg-red-500'
+                      }`}></span>
+                      <span className="font-medium text-gray-900">{result.driverName}</span>
+                      <span className="text-sm text-gray-500">{result.phone}</span>
+                    </div>
+                    <div className="mt-1 flex items-center space-x-4 text-sm text-gray-600">
+                      <span>📋 {result.campaignName}</span>
+                      {result.sid && (
+                        <span className="text-xs bg-gray-100 px-2 py-1 rounded font-mono">
+                          {result.sid.substring(0, 12)}...
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="text-right">
