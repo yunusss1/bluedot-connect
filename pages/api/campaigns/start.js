@@ -57,6 +57,11 @@ console.log('🔍 Driver ID match check:', campaign.target_driver_ids.map(id => 
 
     for (const driver of targetDrivers) {
       console.log(`📤 Sending ${campaign.type} to ${driver.name} (${driver.phone_number})`);
+
+      console.log('🔑 ENV Check before call:');
+  console.log('TWILIO_ACCOUNT_SID:', process.env.TWILIO_ACCOUNT_SID ? 'SET' : 'MISSING');
+  console.log('TWILIO_AUTH_TOKEN:', process.env.TWILIO_AUTH_TOKEN ? 'SET' : 'MISSING');  
+  console.log('TWILIO_PHONE_NUMBER:', process.env.TWILIO_PHONE_NUMBER || 'MISSING');
       
       let result;
       if (campaign.type === 'voice') {
