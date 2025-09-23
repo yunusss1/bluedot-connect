@@ -391,7 +391,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
           </div>
         ) : (
           <div className="space-y-3">
-    {callResults.map((result, index) => (
+            {callResults.map((result, index) => (
               <div key={index} className="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition-colors">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
@@ -409,21 +409,40 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
                           {result.sid.substring(0, 12)}...
                         </span>
                       )}
+                      {/* Recording info eklendi */}
+                      {result.recordingUrl && (
+                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          🎤 {result.recordingDuration}s recorded
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right flex items-center space-x-2">
                     <div className={`text-sm font-medium ${
                       result.success ? 'text-green-600' : 'text-red-600'
                     }`}>
                       {result.simulated ? '🔧 Simulated' : result.success ? '✅ Success' : '❌ Failed'}
                     </div>
-                    {result.message && (
-                      <div className="text-xs text-gray-500 mt-1 max-w-xs truncate">
-                        {result.message}
-                      </div>
+                    {/* Recording play button eklendi */}
+                    {result.recordingUrl && (
+                      <button
+                        onClick={() => window.open(result.recordingUrl, '_blank')}
+                        className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition-colors flex items-center space-x-1"
+                        title="Play recording"
+                      >
+                        <span>🎵</span>
+                        <span>Play</span>
+                      </button>
                     )}
                   </div>
                 </div>
+                
+                {/* Recording details - eğer varsa */}
+                {result.recordingUrl && result.message && (
+                  <div className="mt-2 pt-2 border-t border-gray-100">
+                    <p className="text-xs text-gray-500">Response received</p>
+                  </div>
+                )}
               </div>
             ))}
           </div>
