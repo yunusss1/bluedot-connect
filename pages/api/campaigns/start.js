@@ -31,6 +31,13 @@ export default async function handler(req, res) {
     
     console.log('🎯 Target drivers for campaign:', targetDrivers.length);
 
+    console.log('📋 Campaign target_driver_ids:', campaign.target_driver_ids);
+console.log('👥 Available driver IDs:', allDrivers.map(d => d.id));
+console.log('🔍 Driver ID match check:', campaign.target_driver_ids.map(id => ({
+  id,
+  found: allDrivers.find(d => d.id === id) ? 'YES' : 'NO'
+})));
+
     if (targetDrivers.length === 0) {
       return res.status(400).json({ 
         error: 'No target drivers found',
