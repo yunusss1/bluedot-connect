@@ -1,4 +1,4 @@
-// pages/api/twilio/voice.js - 2024 güncel Real-Time Transcription API
+// pages/api/twilio/voice.js - Recording action eklenmiş versiyonu
 import twilio from 'twilio';
 
 export default function handler(req, res) {
@@ -14,14 +14,6 @@ export default function handler(req, res) {
     
     console.log('📢 Speaking message:', message);
     
-    // NEW SYNTAX: Start Real-Time Transcription (2024 API)
- //   const start = twiml.start();
- //   const transcription = start.transcription({
-  //    statusCallbackUrl: 'https://bluedot-connect.vercel.app/api/twilio/transcriptions',
-  //    languageCode: 'en-US',
-  //    track: 'both_tracks'
- //   });
-
     // Speak the message
     twiml.say({ 
       voice: 'Polly.Joanna-Generative', 
@@ -37,18 +29,13 @@ export default function handler(req, res) {
       language: 'en-US' 
     }, 'Please share your response. Press pound key when finished.');
 
-    // Record response (backup transcription)
+    // Record response with action URL
     twiml.record({
       maxLength: 30,
       finishOnKey: '#',
-      transcribe: false // Real-time transcription handles this
+      transcribe: false,
+      action: 'https://bluedot-connect.vercel.app/api/twilio/recording'
     });
-
-    // Thank you message
-    twiml.say({ 
-      voice: 'Polly.Joanna-Generative', 
-      language: 'en-US' 
-    }, 'Thank you for your response. Goodbye.');
 
     // Generate TwiML XML
     const twimlXml = twiml.toString();
