@@ -25,7 +25,7 @@ export default async function handler(req, res) {
         
         // Format driver data
         const drivers = parsed.data.map((row, index) => ({
-          id: `driver_${Date.now()}`,
+          id: `driver_${Date.now()}_${index}`,
           name: row.name || row.Name || row.isim || row.İsim,
           phone_number: row.phone || row.Phone || row.telefon || row.Telefon,
           email: row.email || row.Email || row.eposta || row.Eposta,
