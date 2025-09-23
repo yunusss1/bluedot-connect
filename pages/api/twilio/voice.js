@@ -17,7 +17,7 @@ export default function handler(req, res) {
     // NEW SYNTAX: Start Real-Time Transcription (2024 API)
     const start = twiml.start();
     const transcription = start.transcription({
-      statusCallbackUrl: `${process.env.VERCEL_URL || 'https://bluedot-connect.vercel.app'}/api/twilio/transcriptions`,
+      statusCallbackUrl: 'https://bluedot-connect.vercel.app/api/twilio/transcriptions',
       languageCode: 'en-US',
       track: 'both_tracks'
     });
