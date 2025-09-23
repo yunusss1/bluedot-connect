@@ -15,12 +15,12 @@ export default function handler(req, res) {
     console.log('📢 Speaking message:', message);
     
     // NEW SYNTAX: Start Real-Time Transcription (2024 API)
-    const start = twiml.start();
-    const transcription = start.transcription({
-      statusCallbackUrl: 'https://bluedot-connect.vercel.app/api/twilio/transcriptions',
-      languageCode: 'en-US',
-      track: 'both_tracks'
-    });
+ //   const start = twiml.start();
+ //   const transcription = start.transcription({
+  //    statusCallbackUrl: 'https://bluedot-connect.vercel.app/api/twilio/transcriptions',
+  //    languageCode: 'en-US',
+  //    track: 'both_tracks'
+ //   });
 
     // Speak the message
     twiml.say({ 
