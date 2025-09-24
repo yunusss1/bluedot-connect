@@ -70,39 +70,51 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
 
 
   // Start campaign
-  const startCampaign = async (campaignId) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/campaigns/start?id=${campaignId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
+  // Dashboard.js içindeki startCampaign fonksiyonuna EKLE:
 
-      if (response.ok) {
-        setAlert({ 
-          type: 'success', 
-          message: 'Campaign started successfully!' 
-        });
-        onRefresh();
-      } else {
-        const errorData = await response.json();
-        setAlert({ 
-          type: 'error', 
-          message: errorData.error || 'Error occurred while starting campaign.' 
-        });
-      }
-    } catch (error) {
-      console.error('Campaign start error:', error);
+const startCampaign = async (campaignId) => {
+  // DEBUG: Campaign'i kontrol et
+  console.log('🎯 START CAMPAIGN CLICKED');
+  console.log('Campaign ID:', campaignId);
+  console.log('All campaigns in state:', campaigns);
+  console.log('Campaign exists in state?', campaigns.find(c => c.id === campaignId));
+  
+  setLoading(true);
+  try {
+    const response = await fetch(`/api/campaigns/start?id=${campaignId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    console.log('📡 API Response status:', response.status);
+    
+    if (response.ok) {
+      const data = await response.json();
+      console.log('✅ Success:', data);
+      setAlert({ 
+        type: 'success', 
+        message: 'Campaign started successfully!'
+      });
+      onRefresh();
+    } else {
+      const errorData = await response.json();
+      console.log('❌ Error response:', errorData);
       setAlert({ 
         type: 'error', 
-        message: 'Connection error. Please try again.' 
+        message: errorData.error || 'Error occurred while starting campaign.' 
       });
-    } finally {
-      setLoading(false);
-      setTimeout(() => setAlert(null), 5000);
     }
-  };
-
+  } catch (error) {
+    console.error('💥 Campaign start error:', error);
+    setAlert({ 
+      type: 'error', 
+      message: 'Connection error. Please try again.' 
+    });
+  } finally {
+    setLoading(false);
+    setTimeout(() => setAlert(null), 5000);
+  }
+};
   // Stop campaign
   const updateCampaignStatus = async (campaignId, status) => {
     try {
