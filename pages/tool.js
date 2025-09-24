@@ -52,7 +52,7 @@ export default function Tool() {
       <div className="max-w-7xl mx-auto">
         <header className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">
-            ⚡ EV Fleet Communication Tool
+            ⚡ Bluedot Connect
           </h1>
           <p className="text-purple-100">
             Create automated communication campaigns with your drivers
