@@ -8,7 +8,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
   const [transcripts, setTranscripts] = useState([]);
   const [expandedCall, setExpandedCall] = useState(null);
 
-  // Load recordings and transcripts
+  // Load recordings and transcripts with polling
   useEffect(() => {
     const loadCallData = async () => {
       try {
@@ -31,7 +31,14 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
       }
     };
 
+    // Initial load
     loadCallData();
+
+    // Set up polling every 5 seconds
+    const interval = setInterval(loadCallData, 5000);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
   }, [campaigns]); // Reload when campaigns change
 
   // Calculate statistics
@@ -288,12 +295,43 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
       <div className="bg-white/95 backdrop-blur-md rounded-xl p-6 shadow-xl">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800">📊 Campaign Management</h2>
-          <button
-            onClick={onRefresh}
-            className="text-purple-600 hover:text-purple-700 font-medium"
-          >
-            🔄 Yenile
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={onRefresh}
+              className="text-purple-600 hover:text-purple-700 font-medium"
+            >
+              🔄 Campaigns
+            </button>
+            <button
+              onClick={() => {
+                // Force refresh call data
+                const loadCallData = async () => {
+                  try {
+                    const [recordingsRes, transcriptsRes] = await Promise.all([
+                      fetch('/api/recordings'),
+                      fetch('/api/transcripts')
+                    ]);
+                    
+                    if (recordingsRes.ok) {
+                      const recordingsData = await recordingsRes.json();
+                      setRecordings(recordingsData.recordings || []);
+                    }
+                    
+                    if (transcriptsRes.ok) {
+                      const transcriptsData = await transcriptsRes.json();
+                      setTranscripts(transcriptsData.transcripts || []);
+                    }
+                  } catch (error) {
+                    console.error('Error loading call data:', error);
+                  }
+                };
+                loadCallData();
+              }}
+              className="text-blue-600 hover:text-blue-700 font-medium"
+            >
+              📞 Call Data
+            </button>
+          </div>
         </div>
 
         {campaigns.length === 0 ? (
@@ -420,9 +458,15 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
 
       {/* Call Results */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
-          📞 Recent Call Results
-        </h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+            📞 Recent Call Results
+          </h2>
+          <div className="flex items-center text-sm text-gray-500">
+            <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+            Auto-refresh every 5s
+          </div>
+        </div>
 
         {callResults.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
