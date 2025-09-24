@@ -1,9 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Dashboard({ campaigns, drivers, onRefresh }) {
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
   const [smsLoading, setSmsLoading] = useState(false);
+  const [recordings, setRecordings] = useState([]);
+  const [transcripts, setTranscripts] = useState([]);
+  const [expandedCall, setExpandedCall] = useState(null);
+
+  // Load recordings and transcripts
+  useEffect(() => {
+    const loadCallData = async () => {
+      try {
+        const [recordingsRes, transcriptsRes] = await Promise.all([
+          fetch('/api/recordings'),
+          fetch('/api/transcripts')
+        ]);
+        
+        if (recordingsRes.ok) {
+          const recordingsData = await recordingsRes.json();
+          setRecordings(recordingsData.recordings || []);
+        }
+        
+        if (transcriptsRes.ok) {
+          const transcriptsData = await transcriptsRes.json();
+          setTranscripts(transcriptsData.transcripts || []);
+        }
+      } catch (error) {
+        console.error('Error loading call data:', error);
+      }
+    };
+
+    loadCallData();
+  }, [campaigns]); // Reload when campaigns change
 
   // Calculate statistics
   const stats = {
@@ -14,10 +43,21 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
     totalDrivers: drivers.length
   };
 
-  // Arama sonuçları hesapla
+  // Arama sonuçları hesapla - recording ve transcript verilerini de ekle
   const callResults = campaigns
     .filter(c => c.results && c.results.length > 0)
-    .flatMap(c => c.results.map(r => ({ ...r, campaignId: c.id, campaignName: c.name })))
+    .flatMap(c => c.results.map(r => {
+      const recording = recordings.find(rec => rec.callSid === r.sid);
+      const transcript = transcripts.find(trans => trans.callSid === r.sid);
+      
+      return { 
+        ...r, 
+        campaignId: c.id, 
+        campaignName: c.name,
+        recording: recording || null,
+        transcript: transcript || null
+      };
+    }))
     .slice(-10); // Son 10 arama sonucu
 
   // SMS Test Gönder
@@ -409,10 +449,16 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
                           {result.sid.substring(0, 12)}...
                         </span>
                       )}
-                      {/* Recording info eklendi */}
-                      {result.recordingUrl && (
+                      {/* Recording info */}
+                      {result.recording && (
                         <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                          🎤 {result.recordingDuration}s recorded
+                          🎤 {result.recording.duration}s recorded
+                        </span>
+                      )}
+                      {/* Transcript info */}
+                      {result.transcript && result.transcript.status === 'completed' && (
+                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                          📝 Transcript ready
                         </span>
                       )}
                     </div>
@@ -423,10 +469,11 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
                     }`}>
                       {result.simulated ? '🔧 Simulated' : result.success ? '✅ Success' : '❌ Failed'}
                     </div>
-                    {/* Recording play button eklendi */}
-                    {result.recordingUrl && (
+                    
+                    {/* Recording play button */}
+                    {result.recording && result.recording.recordingUrl && (
                       <button
-                        onClick={() => window.open(result.recordingUrl, '_blank')}
+                        onClick={() => window.open(result.recording.recordingUrl, '_blank')}
                         className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition-colors flex items-center space-x-1"
                         title="Play recording"
                       >
@@ -434,13 +481,99 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
                         <span>Play</span>
                       </button>
                     )}
+                    
+                    {/* Expand button for details */}
+                    {(result.recording || result.transcript) && (
+                      <button
+                        onClick={() => setExpandedCall(expandedCall === result.sid ? null : result.sid)}
+                        className="bg-gray-600 text-white px-3 py-1 rounded text-xs hover:bg-gray-700 transition-colors flex items-center space-x-1"
+                        title="View details"
+                      >
+                        <span>{expandedCall === result.sid ? '📖' : '👁️'}</span>
+                        <span>{expandedCall === result.sid ? 'Hide' : 'Details'}</span>
+                      </button>
+                    )}
                   </div>
                 </div>
                 
-                {/* Recording details - eğer varsa */}
-                {result.recordingUrl && result.message && (
-                  <div className="mt-2 pt-2 border-t border-gray-100">
-                    <p className="text-xs text-gray-500">Response received</p>
+                {/* Expanded details */}
+                {expandedCall === result.sid && (result.recording || result.transcript) && (
+                  <div className="mt-4 pt-4 border-t border-gray-200 space-y-4">
+                    {/* Recording details */}
+                    {result.recording && (
+                      <div className="bg-blue-50 rounded-lg p-4">
+                        <h4 className="font-medium text-blue-900 mb-2 flex items-center">
+                          🎤 Recording Details
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="font-medium text-blue-700">Duration:</span>
+                            <span className="ml-2 text-blue-600">{result.recording.duration}s</span>
+                          </div>
+                          <div>
+                            <span className="font-medium text-blue-700">Status:</span>
+                            <span className="ml-2 text-blue-600">{result.recording.status}</span>
+                          </div>
+                          <div className="col-span-2">
+                            <span className="font-medium text-blue-700">Recorded:</span>
+                            <span className="ml-2 text-blue-600">
+                              {new Date(result.recording.timestamp).toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                        {result.recording.recordingUrl && (
+                          <div className="mt-3">
+                            <audio controls className="w-full">
+                              <source src={result.recording.recordingUrl} type="audio/mpeg" />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Transcript details */}
+                    {result.transcript && (
+                      <div className="bg-green-50 rounded-lg p-4">
+                        <h4 className="font-medium text-green-900 mb-2 flex items-center">
+                          📝 Transcript
+                        </h4>
+                        <div className="mb-3">
+                          <span className="font-medium text-green-700">Status:</span>
+                          <span className={`ml-2 px-2 py-1 rounded text-xs ${
+                            result.transcript.status === 'completed' 
+                              ? 'bg-green-200 text-green-800' 
+                              : result.transcript.status === 'error'
+                              ? 'bg-red-200 text-red-800'
+                              : 'bg-yellow-200 text-yellow-800'
+                          }`}>
+                            {result.transcript.status}
+                          </span>
+                        </div>
+                        
+                        {result.transcript.text && (
+                          <div className="bg-white rounded border p-3">
+                            <p className="text-sm text-gray-700 leading-relaxed">
+                              "{result.transcript.text}"
+                            </p>
+                          </div>
+                        )}
+                        
+                        {result.transcript.status === 'error' && result.transcript.error && (
+                          <div className="bg-red-100 rounded border border-red-200 p-3 mt-2">
+                            <p className="text-sm text-red-700">
+                              <span className="font-medium">Error:</span> {result.transcript.error}
+                            </p>
+                          </div>
+                        )}
+                        
+                        {result.transcript.completedAt && (
+                          <div className="mt-2 text-xs text-green-600">
+                            Completed: {new Date(result.transcript.completedAt).toLocaleString()}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
