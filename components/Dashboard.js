@@ -629,6 +629,25 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
                             </audio>
                           </div>
                         )}
+                        
+                        {/* Yazılı transkript - eğer transcript varsa */}
+                        {result.transcript && result.transcript.text && (
+                          <div className="mt-4 pt-4 border-t border-blue-200">
+                            <h5 className="font-medium text-blue-800 mb-2 flex items-center">
+                              📝 Yazılı Transkript
+                            </h5>
+                            <div className="bg-white rounded border p-3">
+                              <p className="text-sm text-gray-700 leading-relaxed">
+                                "{result.transcript.text}"
+                              </p>
+                            </div>
+                            {result.transcript.status === 'completed' && (
+                              <div className="mt-2 text-xs text-blue-600">
+                                Transkript tamamlandı: {new Date(result.transcript.completedAt || result.transcript.timestamp).toLocaleString()}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
                     
