@@ -212,7 +212,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
           color="text-green-600"
         />
         <StatCard 
-          title="Planlanan" 
+          title="Scheduled" 
           value={stats.scheduledCampaigns} 
           icon="⏰" 
           color="text-yellow-600"

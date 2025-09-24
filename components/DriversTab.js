@@ -157,7 +157,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
               className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
             >
               <span className="mr-2">👤</span>
-              Manuel Ekle
+              Add Manually
             </button>
           </div>
         </div>
@@ -180,7 +180,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
                 className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center"
               >
                 <span className="mr-1">👤</span>
-                Manuel Ekle
+                Add Manually
               </button>
               <button
                 onClick={() => fileInputRef.current?.click()}
@@ -214,7 +214,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
         </div>
       )}
 
-      {/* Manuel Ekleme Modal */}
+      {/* Manual Add Modal */}
       {showManualForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 animate-fade-in">
@@ -248,7 +248,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Telefon <span className="text-red-500">*</span>
+                  Phone <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="tel"
@@ -262,7 +262,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  E-posta (Opsiyonel)
+                  Email (Optional)
                 </label>
                 <input
                   type="email"
