@@ -39,7 +39,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
 
     // Cleanup interval on unmount
     return () => clearInterval(interval);
-  }, [campaigns]); // Only depend on campaigns
+  }, []); // No dependencies - just poll continuously
 
   // Calculate statistics
   const stats = {
