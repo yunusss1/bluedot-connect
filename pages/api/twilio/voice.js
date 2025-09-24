@@ -1,4 +1,4 @@
-// pages/api/twilio/voice.js - TRANSCRIPTION AKTİF VERSİYON
+// pages/api/twilio/voice.js - DÜZELTİLMİŞ VERSİYON
 import twilio from 'twilio';
 
 export default function handler(req, res) {
@@ -29,14 +29,7 @@ export default function handler(req, res) {
       language: 'en-US' 
     }, 'Please share your response. Press pound key when finished.');
 
-    // ✅ REAL-TIME TRANSCRIPTION BAŞLAT
-    const startTranscription = twiml.start();
-    startTranscription.stream({
-      url: 'wss://bluedot-connect.vercel.app/api/twilio/transcriptions',
-      track: 'inbound_track'
-    });
-
-    // Record response with transcription
+    // Record response with transcription - WebSocket KALDIRILDI
     twiml.record({
       maxLength: 30,
       finishOnKey: '#',
