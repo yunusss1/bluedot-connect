@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 export default function Dashboard({ campaigns, drivers, onRefresh }) {
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
-  const [smsLoading, setSmsLoading] = useState(false);
   const [recordings, setRecordings] = useState([]);
   const [transcripts, setTranscripts] = useState([]);
   const [expandedCall, setExpandedCall] = useState(null);
@@ -69,44 +68,6 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
     .sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0)) // En yeni önce
     .slice(0, 10); // Son 10 arama sonucu
 
-  // SMS Test Gönder
-  const sendTestSMS = async () => {
-    setSmsLoading(true);
-    try {
-      const response = await fetch('/api/send-sms', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          phoneNumber: '+15005550006', // Twilio Magic Test Number
-          message: 'Bu bir test mesajıdır! EV Filo Yönetim Sistemi çalışıyor! 🚗⚡'
-        })
-      });
-
-      const result = await response.json();
-      
-      if (result.success) {
-        setAlert({ 
-          type: 'success', 
-          message: result.simulated 
-            ? '📱 SMS simülasyonu başarılı! (Twilio ENV gerekli)' 
-            : '📱 SMS başarıyla gönderildi!' 
-        });
-      } else {
-        setAlert({ 
-          type: 'error', 
-          message: 'SMS gönderilirken hata oluştu' 
-        });
-      }
-    } catch (error) {
-      setAlert({ 
-        type: 'error', 
-        message: 'SMS Hatası: ' + error.message 
-      });
-    } finally {
-      setSmsLoading(false);
-      setTimeout(() => setAlert(null), 5000);
-    }
-  };
 
   // Start campaign
   const startCampaign = async (campaignId) => {
@@ -264,34 +225,6 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
         />
       </div>
 
-      {/* SMS Test Kartı */}
-      <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 shadow-xl text-white">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-xl font-bold mb-2">📱 SMS Test</h3>
-            <p className="text-blue-100">Twilio SMS entegrasyonunu test et</p>
-          </div>
-          <button
-            onClick={sendTestSMS}
-            disabled={smsLoading}
-            className="bg-white/20 hover:bg-white/30 disabled:bg-white/10 
-                       backdrop-blur-md px-6 py-3 rounded-lg font-medium 
-                       transition-all duration-200 flex items-center gap-2
-                       disabled:cursor-not-allowed"
-          >
-            {smsLoading ? (
-              <>
-                <div className="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full"></div>
-                Gönderiliyor...
-              </>
-            ) : (
-              <>
-                📱 Test SMS Gönder
-              </>
-            )}
-          </button>
-        </div>
-      </div>
 
       {/* Campaign List */}
       <div className="bg-white/95 backdrop-blur-md rounded-xl p-6 shadow-xl">
