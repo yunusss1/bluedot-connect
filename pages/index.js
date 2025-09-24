@@ -16,16 +16,13 @@ export default function LandingPage() {
       <nav className="border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">B</span>
-              </div>
+            <div className="flex items-center">
               <span className="text-xl font-bold">Bluedot</span>
             </div>
             <button
               onClick={handleGetStarted}
               disabled={isLoading}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
+              className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
             >
               {isLoading ? 'Loading...' : 'Get Started'}
             </button>
@@ -36,7 +33,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="pt-20 pb-32">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+          <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
             Voice AI that makes every driver feel like a VIP
           </h1>
           <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
@@ -47,7 +44,7 @@ export default function LandingPage() {
             <button
               onClick={handleGetStarted}
               disabled={isLoading}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors disabled:opacity-50"
+              className="bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors disabled:opacity-50"
             >
               {isLoading ? 'Loading...' : 'Start Free Trial'}
             </button>
@@ -72,7 +69,7 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-gray-900 p-8 rounded-xl border border-gray-700">
-              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-6">
+              <div className="w-12 h-12 bg-cyan-600 rounded-lg flex items-center justify-center mb-6">
                 <span className="text-2xl">🎤</span>
               </div>
               <h3 className="text-xl font-semibold mb-4">Voice & SMS Campaigns</h3>
@@ -83,7 +80,7 @@ export default function LandingPage() {
             </div>
 
             <div className="bg-gray-900 p-8 rounded-xl border border-gray-700">
-              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-6">
+              <div className="w-12 h-12 bg-cyan-600 rounded-lg flex items-center justify-center mb-6">
                 <span className="text-2xl">🤖</span>
               </div>
               <h3 className="text-xl font-semibold mb-4">AI-Powered Responses</h3>
@@ -94,7 +91,7 @@ export default function LandingPage() {
             </div>
 
             <div className="bg-gray-900 p-8 rounded-xl border border-gray-700">
-              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-6">
+              <div className="w-12 h-12 bg-cyan-600 rounded-lg flex items-center justify-center mb-6">
                 <span className="text-2xl">📊</span>
               </div>
               <h3 className="text-xl font-semibold mb-4">Real-time Analytics</h3>
@@ -121,7 +118,7 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🔧</span>
               </div>
               <h3 className="text-lg font-semibold mb-2">Maintenance Reminders</h3>
@@ -129,7 +126,7 @@ export default function LandingPage() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">⚡</span>
               </div>
               <h3 className="text-lg font-semibold mb-2">Charging Alerts</h3>
@@ -137,7 +134,7 @@ export default function LandingPage() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🚨</span>
               </div>
               <h3 className="text-lg font-semibold mb-2">Emergency Notifications</h3>
@@ -145,7 +142,7 @@ export default function LandingPage() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">📋</span>
               </div>
               <h3 className="text-lg font-semibold mb-2">Driver Surveys</h3>
@@ -167,7 +164,7 @@ export default function LandingPage() {
           <button
             onClick={handleGetStarted}
             disabled={isLoading}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors disabled:opacity-50"
+            className="bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors disabled:opacity-50"
           >
             {isLoading ? 'Loading...' : 'Start Your Free Trial'}
           </button>
@@ -178,10 +175,7 @@ export default function LandingPage() {
       <footer className="border-t border-gray-800 py-8">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
-                <span className="text-white font-bold text-sm">B</span>
-              </div>
+            <div className="flex items-center">
               <span className="text-gray-400">© 2024 Bluedot. All rights reserved.</span>
             </div>
             <div className="flex space-x-6 text-gray-400">
