@@ -9,7 +9,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
   const [expandedCall, setExpandedCall] = useState(null);
   
 
-  // Load recordings and transcripts with smart polling
+  // Load recordings and transcripts with simple polling
   useEffect(() => {
     const loadCallData = async () => {
       try {
@@ -35,37 +35,12 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
     // Initial load
     loadCallData();
 
-    // Check if we need to continue polling
-    const shouldPoll = () => {
-      // Get all call SIDs from campaigns
-      const allCallSids = campaigns
-        .filter(c => c.results && c.results.length > 0)
-        .flatMap(c => c.results.map(r => r.sid))
-        .filter(sid => sid);
-
-      // If no calls, don't poll
-      if (allCallSids.length === 0) return false;
-
-      // Check if any calls are missing recording or transcript
-      const hasIncompleteData = allCallSids.some(sid => {
-        const hasRecording = recordings.some(r => r.callSid === sid);
-        const hasTranscript = transcripts.some(t => t.callSid === sid);
-        return !hasRecording || !hasTranscript;
-      });
-
-      return hasIncompleteData;
-    };
-
-    // Smart polling - only poll if there's incomplete data
-    const interval = setInterval(() => {
-      if (shouldPoll()) {
-        loadCallData();
-      }
-    }, 5000);
+    // Simple polling every 5 seconds
+    const interval = setInterval(loadCallData, 5000);
 
     // Cleanup interval on unmount
     return () => clearInterval(interval);
-  }, [campaigns, recordings, transcripts]); // Include all dependencies for shouldPoll function
+  }, [campaigns]); // Only depend on campaigns
 
   // Calculate statistics
   const stats = {
