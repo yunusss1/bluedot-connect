@@ -39,7 +39,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
         }
       } catch (error) {
         console.error('Upload error:', error);
-        setAlert({ type: 'error', message: 'Bir hata oluştu.' });
+        setAlert({ type: 'error', message: 'An error occurred.' });
       } finally {
         setLoading(false);
       }
@@ -52,7 +52,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
     e.preventDefault();
     
     if (!manualDriver.name || !manualDriver.phone) {
-      setAlert({ type: 'error', message: 'İsim ve telefon alanları zorunludur!' });
+      setAlert({ type: 'error', message: 'Name and phone fields are required!' });
       return;
     }
 
@@ -67,7 +67,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
       };
 
 
-      // API'ye gönder (başarısız olsa da local'de kalacak)
+      // Send to API (will remain local even if failed)
       try {
         const response = await fetch('/api/drivers', {
           method: 'POST',
@@ -84,20 +84,20 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
           setAlert({ 
             type: 'success', 
             message: data.message ? 
-              'Sürücü eklendi! (DB bağlantısı yok, geçici olarak kaydedildi)' : 
-              'Sürücü başarıyla eklendi ve kaydedildi!' 
+              'Driver added! (No DB connection, temporarily saved)' : 
+              'Driver successfully added and saved!' 
           });
         } else {
           setAlert({ 
             type: 'success', 
-            message: 'Sürücü eklendi! (DB bağlantısı yok)' 
+            message: 'Driver added! (No DB connection)' 
           });
         }
       } catch (error) {
         console.warn('API error but driver added locally:', error);
         setAlert({ 
           type: 'success', 
-          message: 'Sürücü eklendi! (DB bağlantısı yok, sadece bu oturum için geçerli)' 
+            message: 'Driver added! (No DB connection, valid only for this session)'
         });
       }
       
@@ -105,7 +105,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
       setShowManualForm(false);
     } catch (error) {
       console.error('Manual add error:', error);
-      setAlert({ type: 'error', message: 'Bir hata oluştu.' });
+      setAlert({ type: 'error', message: 'An error occurred.' });
     } finally {
       setLoading(false);
     }
@@ -219,7 +219,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 animate-fade-in">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-gray-800">Yeni Sürücü Ekle</h3>
+              <h3 className="text-lg font-bold text-gray-800">Add New Driver</h3>
               <button
                 onClick={() => {
                   setShowManualForm(false);
@@ -234,14 +234,14 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
             <form onSubmit={handleManualAdd} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  İsim Soyisim <span className="text-red-500">*</span>
+                  Full Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={manualDriver.name}
                   onChange={(e) => setManualDriver({...manualDriver, name: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
-                  placeholder="Örn: Ahmet Yılmaz"
+                  placeholder="e.g. John Doe"
                   required
                 />
               </div>
@@ -255,7 +255,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
                   value={manualDriver.phone}
                   onChange={(e) => setManualDriver({...manualDriver, phone: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
-                  placeholder="Örn: +905551234567"
+                  placeholder="e.g. +1234567890"
                   required
                 />
               </div>
@@ -269,7 +269,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
                   value={manualDriver.email}
                   onChange={(e) => setManualDriver({...manualDriver, email: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
-                  placeholder="Örn: ahmet@example.com"
+                  placeholder="e.g. john@example.com"
                 />
               </div>
               
@@ -282,10 +282,10 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
                   {loading ? (
                     <div className="flex items-center justify-center">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Ekleniyor...
+                      Adding...
                     </div>
                   ) : (
-                    'Sürücüyü Ekle'
+                    'Add Driver'
                   )}
                 </button>
                 <button
@@ -296,7 +296,7 @@ export default function DriversTab({ drivers, setDrivers, onRefresh }) {
                   }}
                   className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  İptal
+                  Cancel
                 </button>
               </div>
             </form>

@@ -50,7 +50,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
     totalDrivers: drivers.length
   };
 
-  // Arama sonuçları hesapla - recording ve transcript verilerini de ekle
+  // Calculate call results - add recording and transcript data
   const callResults = campaigns
     .filter(c => c.results && c.results.length > 0)
     .flatMap(c => c.results.map(r => {
@@ -65,8 +65,8 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
         transcript: transcript || null
       };
     }))
-    .sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0)) // En yeni önce
-    .slice(0, 10); // Son 10 arama sonucu
+    .sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0)) // Latest first
+    .slice(0, 10); // Last 10 call results
 
 
   // Start campaign
@@ -95,7 +95,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
       console.error('Campaign start error:', error);
       setAlert({ 
         type: 'error', 
-        message: 'Bağlantı hatası. Lütfen tekrar deneyin.' 
+        message: 'Connection error. Please try again.' 
       });
     } finally {
       setLoading(false);
@@ -128,7 +128,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
       console.error('Status update error:', error);
       setAlert({ 
         type: 'error', 
-        message: 'Bağlantı hatası.' 
+        message: 'Connection error.' 
       });
     } finally {
       setTimeout(() => setAlert(null), 5000);
@@ -138,7 +138,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
   // Status badge
   const getStatusBadge = (status) => {
     const statusConfig = {
-      scheduled: { color: 'bg-yellow-100 text-yellow-800', text: 'Planlandı', icon: '⏰' },
+      scheduled: { color: 'bg-yellow-100 text-yellow-800', text: 'Scheduled', icon: '⏰' },
       ongoing: { color: 'bg-blue-100 text-blue-800', text: 'Ongoing', icon: '🔄' },
       completed: { color: 'bg-green-100 text-green-800', text: 'Completed', icon: '✅' },
       failed: { color: 'bg-red-100 text-red-800', text: 'Failed', icon: '❌' }
@@ -312,16 +312,16 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
                           </span>
                         </div>
                         <div>
-                          <span className="font-medium">Hedef:</span> 
-                          <span className="ml-1">{targetDrivers.length} sürücü</span>
+                          <span className="font-medium">Target:</span> 
+                          <span className="ml-1">{targetDrivers.length} drivers</span>
                         </div>
                         <div>
-                          <span className="font-medium">İletişim:</span> 
-                          <span className="ml-1">{totalLogs} gönderim</span>
+                          <span className="font-medium">Communications:</span> 
+                          <span className="ml-1">{totalLogs} sent</span>
                         </div>
                         {totalLogs > 0 && (
                           <div>
-                            <span className="font-medium">Başarı:</span> 
+                            <span className="font-medium">Success:</span> 
                             <span className={`ml-1 font-medium ${
                               successRate >= 80 ? 'text-green-600' : 
                               successRate >= 50 ? 'text-yellow-600' : 'text-red-600'
@@ -333,7 +333,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
                       </div>
                     </div>
 
-                    {/* Aksiyon Butonları */}
+                    {/* Action Buttons */}
                     <div className="flex gap-2">
                       {campaign.status === 'scheduled' && (
                         <button
@@ -539,11 +539,11 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
                           </div>
                         )}
                         
-                        {/* Yazılı transkript - eğer transcript varsa */}
+                        {/* Written transcript - if transcript exists */}
                         {result.transcript && result.transcript.text && (
                           <div className="mt-4 pt-4 border-t border-blue-200">
                             <h5 className="font-medium text-blue-800 mb-2 flex items-center">
-                              📝 Yazılı Transkript
+                              📝 Written Transcript
                             </h5>
                             <div className="bg-white rounded border p-3">
                               <p className="text-sm text-gray-700 leading-relaxed">
@@ -552,7 +552,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
                             </div>
                             {result.transcript.status === 'completed' && (
                               <div className="mt-2 text-xs text-blue-600">
-                                Transkript tamamlandı: {new Date(result.transcript.completedAt || result.transcript.timestamp).toLocaleString()}
+                                Transcript completed: {new Date(result.transcript.completedAt || result.transcript.timestamp).toLocaleString()}
                               </div>
                             )}
                           </div>

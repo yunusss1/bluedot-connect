@@ -12,12 +12,12 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
   const [alert, setAlert] = useState(null);
   const [showTemplates, setShowTemplates] = useState(false);
 
-  // Hazır şablon mesajlar
+  // Ready message templates
   const messageTemplates = {
     voice: [
       {
-        title: 'Bakım Hatırlatması',
-        content: 'Merhaba, bu EV filo yönetiminden bir hatırlatmadır. Aracınızın periyodik bakım zamanı yaklaşmaktadır. Lütfen en kısa sürede yetkili servisle iletişime geçiniz. Teşekkür ederiz.'
+        title: 'Maintenance Reminder',
+        content: 'Hello, this is a reminder from EV fleet management. Your vehicle\'s periodic maintenance time is approaching. Please contact the authorized service as soon as possible. Thank you.'
       },
       {
         title: 'Battery Status Check',
@@ -30,16 +30,16 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
     ],
     sms: [
       {
-        title: 'Bakım Hatırlatması',
-        content: 'Sayın sürücü, aracınızın bakım zamanı yaklaşmaktadır. Randevu için 1, iptal için 2 yazıp gönderiniz.'
+        title: 'Maintenance Reminder',
+        content: 'Dear driver, your vehicle\'s maintenance time is approaching. Write 1 for appointment, 2 for cancellation and send.'
       },
       {
-        title: 'Şarj Hatırlatması',
-        content: 'Aracınızın menzili 50km altına düşmüştür. En yakın şarj istasyonu: Ataşehir İstasyon Plaza. Yön tarifi için 1 yazınız.'
+        title: 'Charging Reminder',
+        content: 'Your vehicle\'s range has dropped below 50km. Nearest charging station: Ataşehir Station Plaza. Write 1 for directions.'
       },
       {
-        title: 'Anket',
-        content: 'Filo hizmetlerimizi 1-5 arası puanlayınız. 1: Çok kötü, 5: Mükemmel. Yanıtınızı gönderin.'
+        title: 'Survey',
+        content: 'Rate our fleet services between 1-5. 1: Very bad, 5: Excellent. Send your response.'
       }
     ]
   };
@@ -51,7 +51,7 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
     if (!formData.name || !formData.template_content || formData.target_driver_ids.length === 0) {
       setAlert({ 
         type: 'error', 
-        message: 'Lütfen tüm alanları doldurun ve en az bir sürücü seçin.' 
+        message: 'Please fill in all fields and select at least one driver.' 
       });
       setTimeout(() => setAlert(null), 5000);
       return;
@@ -72,7 +72,7 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
           message: 'Campaign created successfully! You can start it from the Dashboard.' 
         });
         
-        // Formu sıfırla
+        // Reset form
         setFormData({
           name: '',
           type: 'voice',
@@ -83,7 +83,7 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
         // Update campaign list
         onRefresh();
         
-        // 5 saniye sonra alert'i kaldır
+        // Remove alert after 5 seconds
         setTimeout(() => setAlert(null), 5000);
       } else {
         const errorData = await response.json();
@@ -97,7 +97,7 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
       console.error('Campaign creation error:', error);
       setAlert({ 
         type: 'error', 
-        message: 'Bağlantı hatası. Lütfen tekrar deneyin.' 
+        message: 'Connection error. Please try again.' 
       });
       setTimeout(() => setAlert(null), 5000);
     } finally {
@@ -147,7 +147,7 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
           onClick={() => setShowTemplates(!showTemplates)}
           className="text-purple-600 hover:text-purple-700 text-sm font-medium flex items-center"
         >
-          <span className="mr-1">📝</span> Hazır Şablonlar
+          <span className="mr-1">📝</span> Ready Templates
         </button>
       </div>
       
@@ -220,18 +220,18 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
-              placeholder="Örn: Aylık Bakım Hatırlatması"
+              placeholder="e.g. Monthly Maintenance Reminder"
               maxLength={100}
             />
             <p className="text-xs text-gray-500 mt-1">
-              {formData.name.length}/100 karakter
+              {formData.name.length}/100 characters
             </p>
           </div>
           
-          {/* İletişim Kanalı */}
+          {/* Communication Channel */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              İletişim Kanalı <span className="text-red-500">*</span>
+              Communication Channel <span className="text-red-500">*</span>
             </label>
             <div className="flex space-x-4">
               <label className="flex items-center cursor-pointer bg-gray-50 px-4 py-2 rounded-lg border-2 transition-all hover:bg-purple-50 ${formData.type === 'voice' ? 'border-purple-600 bg-purple-50' : 'border-gray-200'}">
@@ -273,19 +273,19 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
               maxLength={maxCharacters}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all resize-none"
               placeholder={formData.type === 'voice' 
-                ? "Merhaba, bu EV filo yönetiminden bir hatırlatmadır. Aracınızın bakım zamanı yaklaşmaktadır..." 
-                : "Sayın sürücü, aracınızın bakım zamanı yaklaşmaktadır. Randevu için 1, iptal için 2 yazınız."}
+                ? "Hello, this is a reminder from EV fleet management. Your vehicle's maintenance time is approaching..." 
+                : "Dear driver, your vehicle's maintenance time is approaching. Write 1 for appointment, 2 for cancellation."}
             />
             <div className="flex justify-between items-center mt-1">
               <p className="text-xs text-gray-500">
                 {formData.type === 'voice' 
-                  ? 'Sesli aramada metin otomatik olarak sese dönüştürülecektir.' 
-                  : 'SMS mesajları 160 karakterle sınırlıdır.'}
+                  ? 'Text will be automatically converted to speech in voice calls.' 
+                  : 'SMS messages are limited to 160 characters.'}
               </p>
               <p className={`text-xs font-medium ${
                 characterCount > maxCharacters * 0.9 ? 'text-red-600' : 'text-gray-600'
               }`}>
-                {characterCount}/{maxCharacters} karakter
+                {characterCount}/{maxCharacters} characters
               </p>
             </div>
           </div>
@@ -296,7 +296,7 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
               <label className="block text-sm font-medium text-gray-700">
                 Target Drivers <span className="text-red-500">*</span>
                 <span className="ml-2 text-purple-600">
-                  ({formData.target_driver_ids.length}/{drivers.length} seçili)
+                  ({formData.target_driver_ids.length}/{drivers.length} selected)
                 </span>
               </label>
               <div className="space-x-2">
@@ -353,7 +353,7 @@ export default function CampaignsTab({ drivers, campaigns, setCampaigns, onRefre
             </p>
           </div>
           
-          {/* Submit Butonları */}
+          {/* Submit Buttons */}
           <div className="flex space-x-3">
             <button
               type="submit"
