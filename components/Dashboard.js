@@ -7,6 +7,11 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
   const [recordings, setRecordings] = useState([]);
   const [transcripts, setTranscripts] = useState([]);
   const [expandedCall, setExpandedCall] = useState(null);
+  
+  // Reset expanded call when campaigns change (new call added)
+  useEffect(() => {
+    setExpandedCall(null);
+  }, [campaigns.length]); // Only when number of campaigns changes
 
   // Load recordings and transcripts with smart polling
   useEffect(() => {
@@ -64,7 +69,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
 
     // Cleanup interval on unmount
     return () => clearInterval(interval);
-  }, [campaigns, recordings, transcripts]); // Include recordings and transcripts in dependencies
+  }, [campaigns]); // Only depend on campaigns to prevent infinite re-renders
 
   // Calculate statistics
   const stats = {
