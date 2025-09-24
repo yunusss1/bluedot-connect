@@ -65,7 +65,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
 
     // Cleanup interval on unmount
     return () => clearInterval(interval);
-  }, [campaigns]); // Only depend on campaigns to prevent infinite re-renders
+  }, [campaigns, recordings, transcripts]); // Include all dependencies for shouldPoll function
 
   // Calculate statistics
   const stats = {
