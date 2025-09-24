@@ -8,7 +8,7 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
   const [transcripts, setTranscripts] = useState([]);
   const [expandedCall, setExpandedCall] = useState(null);
 
-  // Load recordings and transcripts with polling
+  // Load recordings and transcripts with smart polling
   useEffect(() => {
     const loadCallData = async () => {
       try {
@@ -34,12 +34,34 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
     // Initial load
     loadCallData();
 
-    // Set up polling every 5 seconds
-    const interval = setInterval(loadCallData, 5000);
+    // Check if we need to continue polling
+    const shouldPoll = () => {
+      // Get all call SIDs from campaigns
+      const allCallSids = campaigns
+        .filter(c => c.results && c.results.length > 0)
+        .flatMap(c => c.results.map(r => r.sid))
+        .filter(sid => sid); // Remove undefined/null
+
+      // Check if any calls are missing recording or transcript
+      const hasIncompleteData = allCallSids.some(sid => {
+        const hasRecording = recordings.some(r => r.callSid === sid);
+        const hasTranscript = transcripts.some(t => t.callSid === sid);
+        return !hasRecording || !hasTranscript;
+      });
+
+      return hasIncompleteData;
+    };
+
+    // Set up smart polling - only poll if there's incomplete data
+    const interval = setInterval(() => {
+      if (shouldPoll()) {
+        loadCallData();
+      }
+    }, 5000);
 
     // Cleanup interval on unmount
     return () => clearInterval(interval);
-  }, [campaigns]); // Reload when campaigns change
+  }, [campaigns, recordings, transcripts]); // Dependencies include recordings and transcripts
 
   // Calculate statistics
   const stats = {
@@ -462,10 +484,31 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
           <h2 className="text-xl font-semibold text-gray-800 flex items-center">
             📞 Recent Call Results
           </h2>
-          <div className="flex items-center text-sm text-gray-500">
-            <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-            Auto-refresh every 5s
-          </div>
+          {(() => {
+            // Check if we're still polling for incomplete data
+            const allCallSids = campaigns
+              .filter(c => c.results && c.results.length > 0)
+              .flatMap(c => c.results.map(r => r.sid))
+              .filter(sid => sid);
+            
+            const hasIncompleteData = allCallSids.some(sid => {
+              const hasRecording = recordings.some(r => r.callSid === sid);
+              const hasTranscript = transcripts.some(t => t.callSid === sid);
+              return !hasRecording || !hasTranscript;
+            });
+
+            return hasIncompleteData ? (
+              <div className="flex items-center text-sm text-gray-500">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                Waiting for data...
+              </div>
+            ) : (
+              <div className="flex items-center text-sm text-gray-500">
+                <div className="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
+                All data loaded
+              </div>
+            );
+          })()}
         </div>
 
         {callResults.length === 0 ? (
