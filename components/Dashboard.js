@@ -8,10 +8,6 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
   const [transcripts, setTranscripts] = useState([]);
   const [expandedCall, setExpandedCall] = useState(null);
   
-  // Reset expanded call when campaigns change (new call added)
-  useEffect(() => {
-    setExpandedCall(null);
-  }, [campaigns.length]); // Only when number of campaigns changes
 
   // Load recordings and transcripts with smart polling
   useEffect(() => {
