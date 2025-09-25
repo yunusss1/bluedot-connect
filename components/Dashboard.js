@@ -10,26 +10,44 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
 
   // Load recordings and transcripts with simple polling
   useEffect(() => {
-    const loadCallData = async () => {
-      try {
-        const [recordingsRes, transcriptsRes] = await Promise.all([
-          fetch('/api/recordings'),
-          fetch('/api/transcripts')
-        ]);
-        
-        if (recordingsRes.ok) {
-          const recordingsData = await recordingsRes.json();
-          setRecordings(recordingsData.recordings || []);
+// Dashboard.js - loadCallData fonksiyonunu değiştir (satır 16-39)
+
+const loadCallData = async () => {
+  try {
+    const [recordingsRes, transcriptsRes] = await Promise.all([
+      fetch('/api/recordings'),
+      fetch('/api/transcripts')
+    ]);
+    
+    if (recordingsRes.ok) {
+      const recordingsData = await recordingsRes.json();
+      const newRecordings = recordingsData.recordings || [];
+      
+      // Sadece gerçekten değişiklik varsa state'i güncelle
+      setRecordings(prevRecordings => {
+        if (JSON.stringify(prevRecordings) === JSON.stringify(newRecordings)) {
+          return prevRecordings; // Aynıysa mevcut state'i koru
         }
-        
-        if (transcriptsRes.ok) {
-          const transcriptsData = await transcriptsRes.json();
-          setTranscripts(transcriptsData.transcripts || []);
+        return newRecordings; // Farklıysa güncelle
+      });
+    }
+    
+    if (transcriptsRes.ok) {
+      const transcriptsData = await transcriptsRes.json();
+      const newTranscripts = transcriptsData.transcripts || [];
+      
+      // Sadece gerçekten değişiklik varsa state'i güncelle
+      setTranscripts(prevTranscripts => {
+        if (JSON.stringify(prevTranscripts) === JSON.stringify(newTranscripts)) {
+          return prevTranscripts; // Aynıysa mevcut state'i koru
         }
-      } catch (error) {
-        console.error('Error loading call data:', error);
-      }
-    };
+        return newTranscripts; // Farklıysa güncelle
+      });
+    }
+  } catch (error) {
+    console.error('Error loading call data:', error);
+  }
+};
 
     // Initial load
     loadCallData();
