@@ -524,7 +524,13 @@ const startCampaign = async (campaignId) => {
                     {/* Expand button for details */}
                     {(result.recording || result.transcript) && (
                       <button
-                        onClick={() => setExpandedCall(expandedCall === result.sid ? null : result.sid)}
+                       onClick={() => {
+  console.log('🔍 Expand clicked for:', result.sid, 'Current expanded:', expandedCall);
+  setExpandedCall(expandedCall === result.sid ? null : result.sid);
+  setTimeout(() => {
+    console.log('🕐 After 1sec, expanded state:', expandedCall);
+  }, 1000);
+}}
                         className="bg-gray-600 text-white px-3 py-1 rounded text-xs hover:bg-gray-700 transition-colors flex items-center space-x-1"
                         title="View details"
                       >
