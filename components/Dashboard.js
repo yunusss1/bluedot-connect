@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 export default function Dashboard({ campaigns, drivers, onRefresh }) {
   const [loading, setLoading] = useState(false);
@@ -10,44 +10,26 @@ export default function Dashboard({ campaigns, drivers, onRefresh }) {
 
   // Load recordings and transcripts with simple polling
   useEffect(() => {
-// Dashboard.js - loadCallData fonksiyonunu değiştir (satır 16-39)
-
-const loadCallData = async () => {
-  try {
-    const [recordingsRes, transcriptsRes] = await Promise.all([
-      fetch('/api/recordings'),
-      fetch('/api/transcripts')
-    ]);
-    
-    if (recordingsRes.ok) {
-      const recordingsData = await recordingsRes.json();
-      const newRecordings = recordingsData.recordings || [];
-      
-      // Sadece gerçekten değişiklik varsa state'i güncelle
-      setRecordings(prevRecordings => {
-        if (JSON.stringify(prevRecordings) === JSON.stringify(newRecordings)) {
-          return prevRecordings; // Aynıysa mevcut state'i koru
+    const loadCallData = async () => {
+      try {
+        const [recordingsRes, transcriptsRes] = await Promise.all([
+          fetch('/api/recordings'),
+          fetch('/api/transcripts')
+        ]);
+        
+        if (recordingsRes.ok) {
+          const recordingsData = await recordingsRes.json();
+          setRecordings(recordingsData.recordings || []);
         }
-        return newRecordings; // Farklıysa güncelle
-      });
-    }
-    
-    if (transcriptsRes.ok) {
-      const transcriptsData = await transcriptsRes.json();
-      const newTranscripts = transcriptsData.transcripts || [];
-      
-      // Sadece gerçekten değişiklik varsa state'i güncelle
-      setTranscripts(prevTranscripts => {
-        if (JSON.stringify(prevTranscripts) === JSON.stringify(newTranscripts)) {
-          return prevTranscripts; // Aynıysa mevcut state'i koru
+        
+        if (transcriptsRes.ok) {
+          const transcriptsData = await transcriptsRes.json();
+          setTranscripts(transcriptsData.transcripts || []);
         }
-        return newTranscripts; // Farklıysa güncelle
-      });
-    }
-  } catch (error) {
-    console.error('Error loading call data:', error);
-  }
-};
+      } catch (error) {
+        console.error('Error loading call data:', error);
+      }
+    };
 
     // Initial load
     loadCallData();
@@ -68,24 +50,25 @@ const loadCallData = async () => {
     totalDrivers: drivers.length
   };
 
-  // Calculate call results - add recording and transcript data
-  const callResults = campaigns
-    .filter(c => c.results && c.results.length > 0)
-    .flatMap(c => c.results.map(r => {
-      const recording = recordings.find(rec => rec.callSid === r.sid);
-      const transcript = transcripts.find(trans => trans.callSid === r.sid);
-      
-      return { 
-        ...r, 
-        campaignId: c.id, 
-        campaignName: c.name,
-        recording: recording || null,
-        transcript: transcript || null
-      };
-    }))
-    .sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0)) // Latest first
-    .slice(0, 10); // Last 10 call results
-
+  // Calculate call results - add recording and transcript data - USEMEMO İLE WRAP EDİLDİ
+  const callResults = useMemo(() => {
+    return campaigns
+      .filter(c => c.results && c.results.length > 0)
+      .flatMap(c => c.results.map(r => {
+        const recording = recordings.find(rec => rec.callSid === r.sid);
+        const transcript = transcripts.find(trans => trans.callSid === r.sid);
+        
+        return { 
+          ...r, 
+          campaignId: c.id, 
+          campaignName: c.name,
+          recording: recording || null,
+          transcript: transcript || null
+        };
+      }))
+      .sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0)) // Latest first
+      .slice(0, 10); // Last 10 call results
+  }, [campaigns, recordings, transcripts]);
 
   // Start campaign
   // Dashboard.js içindeki startCampaign fonksiyonuna EKLE:
@@ -471,7 +454,7 @@ const startCampaign = async (campaignId) => {
         ) : (
           <div className="space-y-3">
             {callResults.map((result, index) => (
-              <div key={index} className="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+              <div key={`call-${result.sid || result.campaignId}-${result.driverId}`} className="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition-colors">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3">
@@ -524,13 +507,7 @@ const startCampaign = async (campaignId) => {
                     {/* Expand button for details */}
                     {(result.recording || result.transcript) && (
                       <button
-                       onClick={() => {
-  console.log('🔍 Expand clicked for:', result.sid, 'Current expanded:', expandedCall);
-  setExpandedCall(expandedCall === result.sid ? null : result.sid);
-  setTimeout(() => {
-    console.log('🕐 After 1sec, expanded state:', expandedCall);
-  }, 1000);
-}}
+                        onClick={() => setExpandedCall(expandedCall === result.sid ? null : result.sid)}
                         className="bg-gray-600 text-white px-3 py-1 rounded text-xs hover:bg-gray-700 transition-colors flex items-center space-x-1"
                         title="View details"
                       >
