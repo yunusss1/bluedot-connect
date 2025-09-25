@@ -180,6 +180,9 @@ const startCampaign = async (campaignId) => {
     </div>
   );
 
+  // DEBUG LOG
+  console.log('Dashboard render - expandedCall:', expandedCall, 'campaigns count:', campaigns.length);
+
   return (
     <div className="space-y-6">
       {/* Alert */}
